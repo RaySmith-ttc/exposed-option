@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "ru.raysmith"
-version = "1.0"
+version = "1.2"
 
 repositories {
     mavenCentral()
@@ -34,9 +34,9 @@ publishing {
 }
 
 dependencies {
-    val exposedVersion = "0.40.1"
-    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    val exposedVersion = "0.41.1"
+    api("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    api("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("ru.raysmith:utils:1.3.0")
 }
 

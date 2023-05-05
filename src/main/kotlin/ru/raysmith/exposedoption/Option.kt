@@ -31,9 +31,7 @@ interface Option<T> {
         )
     }
 
-    fun record() = optionTransaction {
-        Options.select { Options.id eq key }.firstOrNull()
-    }
+    fun record() = Options.select { Options.id eq key }.firstOrNull()
 
     fun set(value: T?): Option<T> {
         optionTransaction {
