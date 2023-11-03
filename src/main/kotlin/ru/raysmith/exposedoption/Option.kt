@@ -10,11 +10,13 @@ interface Option<T> {
     val database: Database? get() = null
     val key: String
     val value: T
+    val readOnly: Boolean
     val isolationLevel: Int? get() = null
     val cache: Cacheable<T>? get() = null
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return cache?.getValue(thisRef, property) ?: value
+        @Suppress("UNCHECKED_CAST")
+        return if (cache == null) value else cache?.getValue(thisRef, property) as T
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
@@ -25,7 +27,7 @@ interface Option<T> {
     fun <T> optionTransaction(statement: Transaction.() -> T): T {
         return transaction(
             transactionIsolation = isolationLevel ?: database.transactionManager.defaultIsolationLevel,
-            repetitionAttempts = database.transactionManager.defaultRepetitionAttempts,
+            readOnly = false,
             db = database,
             statement = statement
         )
@@ -48,5 +50,9 @@ interface Option<T> {
         }
 
         return this
+    }
+
+    fun refresh() {
+        cache?.refresh()
     }
 }

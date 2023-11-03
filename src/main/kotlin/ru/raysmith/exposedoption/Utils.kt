@@ -1,6 +1,6 @@
 package ru.raysmith.exposedoption
 
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
 import ru.raysmith.utils.Cacheable
 import java.math.BigDecimal
 import java.sql.Clob
@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.full.isSubclassOf
+import kotlin.time.Duration
 
 const val COLLATE_UTF8MB4_GENERAL_CI = "utf8mb4_general_ci"
 val dbDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -16,16 +17,18 @@ val dbDateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-d
 
 inline fun <reified T> option(
     key: String,
-    useCache: Boolean = false,
+    cacheTime: Duration? = null,
     isolationLevel: Int? = null,
     database: Database? = null,
+    readOnly: Boolean = false,
     crossinline value: Option<T>.() -> T = { getOrThrow() }
 ) = object : Option<T> {
     override val key: String = key
     override val value: T get() = value()
-    override val cache: Cacheable<T>? = if (useCache) Cacheable { value() } else null
+    override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime.inWholeMilliseconds) { value() } else null
     override val isolationLevel: Int? = isolationLevel
     override val database: Database? = database
+    override val readOnly: Boolean = readOnly
 }.also {
     if (null !is T) {
         Options.trackRequired(it)

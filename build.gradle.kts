@@ -1,13 +1,13 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    `kotlin-dsl`
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.9.10"
     id("maven-publish")
 }
 
 group = "ru.raysmith"
-version = "1.2"
+version = "1.4"
 
 repositories {
     mavenCentral()
@@ -34,10 +34,15 @@ publishing {
 }
 
 dependencies {
-    val exposedVersion = "0.41.1"
+    val exposedVersion = "0.44.1"
     api("org.jetbrains.exposed:exposed-core:$exposedVersion")
     api("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("ru.raysmith:utils:1.3.0")
+    implementation("ru.raysmith:utils:2.1.1")
+
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.7.2")
+    testImplementation("com.h2database:h2:2.2.220")
+    testImplementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    testImplementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 }
 
 java {
@@ -45,9 +50,14 @@ java {
     withJavadocJar()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.ExperimentalUnsignedTypes"
+tasks {
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
