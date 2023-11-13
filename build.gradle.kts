@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -7,7 +6,7 @@ plugins {
 }
 
 group = "ru.raysmith"
-version = "1.4"
+version = "1.5"
 
 repositories {
     mavenCentral()
@@ -31,13 +30,18 @@ publishing {
             }
         }
     }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
 }
 
 dependencies {
     val exposedVersion = "0.44.1"
     api("org.jetbrains.exposed:exposed-core:$exposedVersion")
     api("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("ru.raysmith:utils:2.1.1")
+    implementation("ru.raysmith:utils:2.2.0")
 
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.7.2")
     testImplementation("com.h2database:h2:2.2.220")

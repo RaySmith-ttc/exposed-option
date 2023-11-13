@@ -25,7 +25,7 @@ inline fun <reified T> option(
 ) = object : Option<T> {
     override val key: String = key
     override val value: T get() = value()
-    override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime.inWholeMilliseconds) { value() } else null
+    override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime) { value() } else null
     override val isolationLevel: Int? = isolationLevel
     override val database: Database? = database
     override val readOnly: Boolean = readOnly
