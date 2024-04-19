@@ -12,23 +12,19 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.time.Duration
 
 const val COLLATE_UTF8MB4_GENERAL_CI = "utf8mb4_general_ci"
-val dbDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-val dbDateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
 inline fun <reified T> option(
     key: String,
     cacheTime: Duration? = null,
     isolationLevel: Int? = null,
     database: Database? = null,
-    readOnly: Boolean = false,
     crossinline value: Option<T>.() -> T = { getOrThrow() }
-) = object : Option<T> {
+) = object : Option<T>() {
     override val key: String = key
     override val value: T get() = value()
-    override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime) { value() } else null
-    override val isolationLevel: Int? = isolationLevel
     override val database: Database? = database
-    override val readOnly: Boolean = readOnly
+    override val isolationLevel: Int? = isolationLevel
+    override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime) { value() } else null
 }.also {
     if (null !is T) {
         Options.trackRequired(it)
@@ -58,8 +54,8 @@ inline fun <reified T> Option<T>.getOrNull(): T? = optionTransaction {
             Byte::class -> value.toByte()
             UByte::class -> value.toUByte()
             Clob::class -> value
-            LocalDate::class -> value.let { v -> LocalDate.parse(v, dbDateFormat) }
-            LocalDateTime::class -> value.let { v -> LocalDateTime.parse(v, dbDateTimeFormat) }
+            LocalDate::class -> value.let { v -> LocalDate.parse(v) }
+            LocalDateTime::class -> value.let { v -> LocalDateTime.parse(v) }
             LocalTime::class -> value.let { v -> LocalTime.parse(v) }
             else -> throw UnsupportedOperationException("Option cannot be cast to class ${T::class.java.name}")
         } as T

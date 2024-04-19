@@ -6,13 +6,19 @@ import org.jetbrains.exposed.sql.transactions.transactionManager
 import ru.raysmith.utils.Cacheable
 import kotlin.reflect.KProperty
 
-interface Option<T> {
-    val database: Database? get() = null
-    val key: String
-    val value: T
-    val readOnly: Boolean
-    val isolationLevel: Int? get() = null
-    val cache: Cacheable<T>? get() = null
+abstract class Option<T> {
+    abstract val key: String
+    abstract val value: T
+
+    open val database: Database? get() = null
+    open val isolationLevel: Int? get() = null
+    open val cache: Cacheable<T>? get() = null
+
+    init {
+        if (cache != null) {
+            Options.registerOptionCache(key, cache!!)
+        }
+    }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         @Suppress("UNCHECKED_CAST")
