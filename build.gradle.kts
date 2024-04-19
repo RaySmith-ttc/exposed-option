@@ -59,9 +59,9 @@ publishing {
             from(components["java"])
             pom {
                 packaging = "jar"
-                name.set("Google")
-                url.set("https://github.com/RaySmith-ttc/google")
-                description.set("DSL wrappers for java google libs")
+                name.set("exposed-option")
+                url.set("https://github.com/RaySmith-ttc/exposed-option")
+                description.set("Delegate for key-value table for kotlin exposed")
 
 
 
@@ -73,9 +73,9 @@ publishing {
                 }
 
                 scm {
-                    connection.set("scm:https://github.com/RaySmith-ttc/google.git")
-                    developerConnection.set("scm:git@github.com:RaySmith-ttc/google.git")
-                    url.set("https://github.com/RaySmith-ttc/google")
+                    connection.set("scm:https://github.com/RaySmith-ttc/exposed-option.git")
+                    developerConnection.set("scm:git@github.com:RaySmith-ttc/exposed-option.git")
+                    url.set("https://github.com/RaySmith-ttc/exposed-option")
                 }
 
                 developers {
