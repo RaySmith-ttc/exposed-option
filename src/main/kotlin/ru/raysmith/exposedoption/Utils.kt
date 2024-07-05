@@ -7,11 +7,8 @@ import java.sql.Clob
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.time.Duration
-
-const val COLLATE_UTF8MB4_GENERAL_CI = "utf8mb4_general_ci"
 
 inline fun <reified T> option(
     key: String,

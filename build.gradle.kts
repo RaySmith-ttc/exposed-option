@@ -1,16 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "2.0.0"
     `maven-publish`
     signing
-    id("com.gradleup.nmcp") version "0.0.7"
+    id("com.gradleup.nmcp") version "0.0.8"
 }
 
 group = "ru.raysmith"
-version = "1.7"
+version = "2.0"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url = uri("https://maven.pkg.github.com/raysmith-ttc/utils")
@@ -22,10 +23,10 @@ repositories {
 }
 
 dependencies {
-    val exposedVersion = "0.44.1"
+    val exposedVersion = "0.52.0"
     api("org.jetbrains.exposed:exposed-core:$exposedVersion")
     api("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("ru.raysmith:utils:2.2.0")
+    implementation("ru.raysmith:utils:3.0.0")
 
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.7.2")
     testImplementation("com.h2database:h2:2.2.220")
@@ -42,6 +43,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
+            freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
         }
     }
 
@@ -62,8 +64,6 @@ publishing {
                 name.set("exposed-option")
                 url.set("https://github.com/RaySmith-ttc/exposed-option")
                 description.set("Delegate for key-value table for kotlin exposed")
-
-
 
                 licenses {
                     license {
@@ -106,7 +106,6 @@ nmcp {
     publish("release") {
         username.set(System.getenv("CENTRAL_SONATYPE_USER"))
         password.set(System.getenv("CENTRAL_SONATYPE_PASS"))
-        publicationType.set("USER_MANAGED")
         publicationType.set("AUTOMATIC")
     }
 }
