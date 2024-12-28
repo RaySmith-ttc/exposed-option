@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.0.20"
     `maven-publish`
     signing
     id("com.gradleup.nmcp") version "0.0.8"
 }
 
 group = "ru.raysmith"
-version = "2.1"
+version = "2.2"
 
 repositories {
     mavenLocal()
@@ -23,10 +23,10 @@ repositories {
 }
 
 dependencies {
-    val exposedVersion = "0.52.0"
+    val exposedVersion = "0.56.0"
     api("org.jetbrains.exposed:exposed-core:$exposedVersion")
     api("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("ru.raysmith:utils:3.1.0")
+    implementation("ru.raysmith:utils:3.3.1")
 
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.7.2")
     testImplementation("com.h2database:h2:2.2.220")

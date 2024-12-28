@@ -14,12 +14,6 @@ abstract class Option<T> {
     open val isolationLevel: Int? get() = null
     open val cache: Cacheable<T>? get() = null
 
-    init {
-        if (cache != null) {
-            Options.registerOptionCache(key, cache!!)
-        }
-    }
-
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         @Suppress("UNCHECKED_CAST")
         return if (cache == null) value else cache?.getValue(thisRef, property) as T
@@ -39,7 +33,8 @@ abstract class Option<T> {
         )
     }
 
-    fun record() = Options.select { Options.id eq key }.firstOrNull()
+    context(Transaction)
+    fun record() = Options.selectAll().where { Options.id eq key }.firstOrNull()
 
     fun set(value: T?): Option<T> {
         optionTransaction {

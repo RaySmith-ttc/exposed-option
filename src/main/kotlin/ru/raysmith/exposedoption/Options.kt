@@ -32,14 +32,4 @@ object Options : IdTable<String>("options") {
             error("Required options ${failed.joinToString { it.key }} is not set in database")
         }
     }
-
-    private val caches = Collections.synchronizedMap(mutableMapOf<String, Cacheable<*>>())
-    internal fun registerOptionCache(key: String, cacheable: Cacheable<*>) {
-        caches[key] = cacheable
-    }
-    fun refreshCaches() {
-        caches.forEach { (_, cache) ->
-            cache.refresh()
-        }
-    }
 }
