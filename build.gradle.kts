@@ -1,14 +1,13 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "2.0.20"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.nmcp)
+    alias(libs.plugins.benManes.versions)
     `maven-publish`
     signing
-    id("com.gradleup.nmcp") version "0.0.8"
 }
 
 group = "ru.raysmith"
-version = "2.2"
+version = "3.0.0"
 
 repositories {
     mavenLocal()
@@ -23,15 +22,14 @@ repositories {
 }
 
 dependencies {
-    val exposedVersion = "0.56.0"
-    api("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    api("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("ru.raysmith:utils:3.3.1")
+    api(libs.exposed.core)
+    implementation(libs.raysmith.utils)
+    implementation(kotlin("reflect"))
 
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.7.2")
-    testImplementation("com.h2database:h2:2.2.220")
-    testImplementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    testImplementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    testImplementation(libs.kotest)
+    testImplementation(libs.h2)
+    testImplementation(libs.exposed.jdbc)
+    testImplementation(libs.logback)
 }
 
 java {
@@ -39,14 +37,13 @@ java {
     withJavadocJar()
 }
 
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
-        }
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-receivers")
     }
+}
 
+tasks {
     test {
         useJUnitPlatform()
     }

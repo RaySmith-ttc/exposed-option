@@ -1,0 +1,22 @@
+[versions]
+kotlin = "2.1.10"
+exposed = "0.61.0"
+rs-utils = "3.3.1"
+kotest  = "6.0.0.M3"
+h2 = "2.3.232"
+nmcp = "0.0.9"
+benManes-versions = "0.52.0"
+logback = "1.5.18"
+
+[libraries]
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+raysmith-utils = { module = "ru.raysmith:utils", version.ref = "rs-utils" }
+kotest = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+[plugins]
+nmcp = { id = "com.gradleup.nmcp", version.ref = "nmcp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+benManes-versions = { id = "com.github.ben-manes.versions", version.ref = "benManes-versions" }

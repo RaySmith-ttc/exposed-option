@@ -1,66 +1,41 @@
 package ru.raysmith.exposedoption
 
-import org.jetbrains.exposed.sql.Database
-import ru.raysmith.utils.Cacheable
-import java.math.BigDecimal
-import java.sql.Clob
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import kotlin.reflect.full.isSubclassOf
-import kotlin.time.Duration
+/**
+ * Gets the option value or throws an exception if it's not set.
+ *
+ * @return The current value of the option
+ * @throws IllegalStateException if the option is not set in the database
+ */
+fun <T> Option<T>.getOrThrow() = getOrNull() ?: error("Required option $key is not set in database")
 
-inline fun <reified T> option(
-    key: String,
-    cacheTime: Duration? = null,
-    isolationLevel: Int? = null,
-    database: Database? = null,
-    crossinline value: Option<T>.() -> T = { getOrThrow() }
-) = object : Option<T>() {
-    override val key: String = key
-    override val value: T get() = value()
-    override val database: Database? = database
-    override val isolationLevel: Int? = isolationLevel
-    override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime) { value() } else null
-}.also {
-    if (null !is T) {
-        Options.trackRequired(it)
-    }
-}
-
-inline fun <reified T> Option<T>.getOrThrow() = getOrNull() ?: error("Required option $key is not set in database")
-
-inline fun <reified T> Option<T>.getOrNull(): T? = optionTransaction {
+/**
+ * Gets the option value or returns null if it's not set.
+ *
+ * @return The current value of the option, or null if not set
+ */
+fun <T> Option<T>.getOrNull(): T? = optionTransaction {
     val value = record()?.getOrNull(Options.value) ?: return@optionTransaction null
-    if (T::class.isSubclassOf(Enum::class)) {
-        T::class.java.enumConstants.find { (it as Enum<*>).name == value }
-            ?: error("$value can't be associated with any from enum ${T::class.qualifiedName}")
-    } else {
-        when (T::class) {
-            Int::class -> value.toInt()
-            UInt::class -> value.toUInt()
-            Long::class -> value.toLong()
-            ULong::class -> value.toULong()
-            Double::class -> value.toDouble()
-            Float::class -> value.toFloat()
-            Short::class -> value.toShort()
-            BigDecimal::class -> value.toBigDecimal()
-            Boolean::class -> value.toBoolean()
-            String::class -> value
-            Char::class -> value.first()
-            Byte::class -> value.toByte()
-            UByte::class -> value.toUByte()
-            Clob::class -> value
-            LocalDate::class -> value.let { v -> LocalDate.parse(v) }
-            LocalDateTime::class -> value.let { v -> LocalDateTime.parse(v) }
-            LocalTime::class -> value.let { v -> LocalTime.parse(v) }
-            else -> throw UnsupportedOperationException("Option cannot be cast to class ${T::class.java.name}")
-        } as T
-    }
+    transformer.wrap(value)
 }
 
-@JvmName("incInt") fun Option<Int>.inc() = optionTransaction { set(value.plus(1)) }
-@JvmName("incIntNullable") fun Option<Int?>.inc() = optionTransaction { set(value!!.plus(1)) }
+/**
+ * Gets the option value if set, or sets it to the provided default value and returns that.
+ *
+ * @param value The default value to use if the option is not set
+ * @return The current value from the database, or the default value if newly set
+ */
+fun <T : Any> Option<T>.getOrSet(value: T): T = optionTransaction {
+    return@optionTransaction getOrNull() ?: set(value).value
+}
 
-@JvmName("incLong") fun Option<Long>.inc() = optionTransaction { set(value.plus(1)) }
-@JvmName("incLongNullable") fun Option<Long?>.inc() = optionTransaction { set(value!!.plus(1)) }
+/**
+ * Gets the nullable option value if set, or sets it to the provided default value and returns that.
+ *
+ * @param value The default value to use if the option is not set (can be null)
+ * @return The current value from the database, or the default value if newly set
+ */
+@JvmName("getOrSetNullable")
+fun <T : Any?> Option<T?>.getOrSet(value: T?): T? = optionTransaction {
+    if (value == null) return@optionTransaction null
+    return@optionTransaction getOrNull() ?: set(value).value
+}
