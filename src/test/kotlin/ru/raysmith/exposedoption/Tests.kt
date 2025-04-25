@@ -94,6 +94,18 @@ class Tests : FreeSpec({
         option shouldBe null
     }
 
+    "getOrSet should return stored value when fallback is null" {
+        transaction {
+            Options.insert {
+                it[id] = "foo"
+                it[value] = "bar"
+            }
+        }
+
+        val option by option<String?>("foo") { getOrSet(null) }
+        option shouldBe "bar"
+    }
+
     "option should return value when value is set" {
         var option by option<Int?>("foo") { getOrNull() }
         option = 1

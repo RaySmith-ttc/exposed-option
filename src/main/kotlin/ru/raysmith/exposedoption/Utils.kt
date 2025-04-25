@@ -36,6 +36,8 @@ fun <T : Any> Option<T>.getOrSet(value: T): T = optionTransaction {
  */
 @JvmName("getOrSetNullable")
 fun <T : Any?> Option<T?>.getOrSet(value: T?): T? = optionTransaction {
-    if (value == null) return@optionTransaction null
-    return@optionTransaction getOrNull() ?: set(value).value
+    return@optionTransaction getOrNull() ?: run {
+        if (value == null) return@optionTransaction null
+        set(value).value
+    }
 }
