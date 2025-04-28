@@ -473,5 +473,24 @@ class Tests : FreeSpec({
 
         calls shouldBe 1
     }
+
+    "set() should set value" {
+        val delegate = option<Int?>("foo") { getOrNull() }
+
+        delegate.set(1)
+
+        delegate.getOrThrow() shouldBe 1
+    }
+
+    "set() should update cache" {
+        val delegate = option<Int?>("foo", cacheTime = Duration.INFINITE) { getOrNull() }
+        var property by delegate
+        property // init cache
+        property = 1
+
+        delegate.set(2)
+        property shouldBe 2
+        delegate.getOrThrow() shouldBe 2
+    }
 })
 

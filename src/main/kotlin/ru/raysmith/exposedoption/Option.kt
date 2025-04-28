@@ -51,7 +51,7 @@ abstract class Option<T> {
      * in the database and refreshes the cache.
      */
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        cache?.setValue(thisRef, property, value)
+//        cache?.setValue(thisRef, property, value)
         set(value)
     }
 
@@ -203,7 +203,8 @@ abstract class Option<T> {
      * @param value The new value (can be null for nullable options)
      * @return This option instance
      */
-    fun set(value: T?): Option<T> {
+    fun set(value: T): Option<T> {
+        cache?.setValue(this, this::value, value)
         optionTransaction {
             if (record() == null) {
                 Options.insert { stmt ->
