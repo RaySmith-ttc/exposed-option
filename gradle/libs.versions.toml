@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.1.10"
-exposed = "0.61.0"
+exposed = "1.0.0-beta-5"
 rs-utils = "3.3.1"
 kotest  = "6.0.0.M3"
 h2 = "2.3.232"

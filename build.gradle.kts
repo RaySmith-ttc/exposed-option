@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "ru.raysmith"
-version = "3.0.2"
+version = "4.0.0"
 
 repositories {
     mavenLocal()
@@ -23,12 +23,13 @@ repositories {
 
 dependencies {
     api(libs.exposed.core)
+    api(libs.exposed.jdbc)
+
     implementation(libs.raysmith.utils)
     implementation(kotlin("reflect"))
 
     testImplementation(libs.kotest)
     testImplementation(libs.h2)
-    testImplementation(libs.exposed.jdbc)
     testImplementation(libs.logback)
 }
 

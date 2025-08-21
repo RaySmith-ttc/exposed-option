@@ -1,8 +1,12 @@
 package ru.raysmith.exposedoption
 
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.transactions.transactionManager
+import org.jetbrains.exposed.v1.core.Transaction
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.transactions.transactionManager
+import org.jetbrains.exposed.v1.jdbc.update
 import ru.raysmith.utils.Cacheable
 import java.math.BigDecimal
 import kotlin.reflect.KProperty

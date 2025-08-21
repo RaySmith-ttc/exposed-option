@@ -1,8 +1,8 @@
 package ru.raysmith.exposedoption
 
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.v1.core.Column
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
 
 /**
  * Database table definition for storing options.
@@ -14,7 +14,6 @@ import org.jetbrains.exposed.sql.Column
  * The object also provides functionality for tracking and validating required
  * options that must be set in the database.
  * */
-@Suppress("ExposedReference")
 object Options : IdTable<String>("options") {
     override val id: Column<EntityID<String>> = varchar("key", 255).entityId()
     override val primaryKey = PrimaryKey(id)
