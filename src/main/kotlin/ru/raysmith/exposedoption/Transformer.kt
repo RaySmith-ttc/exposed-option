@@ -10,6 +10,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.starProjectedType
 import kotlin.reflect.javaType
+import kotlin.time.Duration
 
 /**
  * An interface defining the transformation between a source column type and a target type.
@@ -54,7 +55,13 @@ private val defaultTransformersCache = mutableMapOf<KType, Transformer<String, *
 @OptIn(ExperimentalStdlibApi::class)
 fun getDefaultTransformerOrCreate(type: KType): Transformer<String, *> {
     return defaultTransformersCache.getOrPut(type) {
-        transformer({ it.toString() }, { value ->
+        transformer({
+            when(it) {
+                is Duration -> it.toIsoString()
+                is java.time.Duration -> it.toString()
+                else -> it.toString()
+            }
+        }, { value ->
             if (type.isSubtypeOf(Enum::class.starProjectedType)) {
                 val enumClass = (type.classifier as KClass<*>).java as Class<out Enum<*>>
                 return@transformer enumClass.enumConstants.find { it.name == value }
@@ -79,6 +86,8 @@ fun getDefaultTransformerOrCreate(type: KType): Transformer<String, *> {
                 LocalDate::class -> value.let { v -> LocalDate.parse(v) }
                 LocalDateTime::class -> value.let { v -> LocalDateTime.parse(v) }
                 LocalTime::class -> value.let { v -> LocalTime.parse(v) }
+                Duration::class -> Duration.parse(value)
+                java.time.Duration::class -> java.time.Duration.parse(value)
                 else -> throw UnsupportedOperationException("Option cannot be cast to class ${type.javaType.typeName}") // TODO upd message: provide custom transformer
             }
         })
