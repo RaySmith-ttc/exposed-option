@@ -190,7 +190,7 @@ abstract class Option<T> {
      */
     fun <T> optionTransaction(statement: Transaction.() -> T): T {
         return transaction(
-            transactionIsolation = isolationLevel ?: database.transactionManager.defaultIsolationLevel,
+            transactionIsolation = isolationLevel ?: database?.transactionManager?.defaultIsolationLevel,
             readOnly = false,
             db = database,
             statement = statement
