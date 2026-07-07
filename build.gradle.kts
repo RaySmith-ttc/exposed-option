@@ -1,3 +1,5 @@
+import okhttp3.internal.platform.android.AndroidLogHandler.publish
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.nmcp)
@@ -7,7 +9,7 @@ plugins {
 }
 
 group = "ru.raysmith"
-version = "4.0.2"
+version = "4.1.0"
 
 repositories {
     mavenLocal()

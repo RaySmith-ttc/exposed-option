@@ -5,6 +5,7 @@ import java.sql.Clob
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZonedDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubtypeOf
@@ -85,6 +86,7 @@ fun getDefaultTransformerOrCreate(type: KType): Transformer<String, *> {
                 Clob::class -> value
                 LocalDate::class -> value.let { v -> LocalDate.parse(v) }
                 LocalDateTime::class -> value.let { v -> LocalDateTime.parse(v) }
+                ZonedDateTime::class -> ZonedDateTime.parse(value)
                 LocalTime::class -> value.let { v -> LocalTime.parse(v) }
                 Duration::class -> Duration.parse(value)
                 java.time.Duration::class -> java.time.Duration.parse(value)
