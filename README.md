@@ -16,7 +16,7 @@ A library for type-safe application settings management stored in a database via
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("ru.raysmith:exposed-option:3.0.0")
+    implementation("ru.raysmith:exposed-option:4.2.0")
 }
 ```
 
@@ -24,7 +24,7 @@ or if you are using Gradle with a version catalog:
 ```toml
 # libs.versions.toml
 [versions]
-raysmith-exposed-option = "3.0.0"
+raysmith-exposed-option = "4.2.0"
 
 [libraries]
 exposed-option = { module = "ru.raysmith:exposed-option", version.ref = "raysmith-exposed-option" }
