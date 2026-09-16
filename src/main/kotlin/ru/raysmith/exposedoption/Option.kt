@@ -56,7 +56,6 @@ abstract class Option<T> {
      * in the database and refreshes the cache.
      */
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-//        cache?.setValue(thisRef, property, value)
         set(value)
     }
 

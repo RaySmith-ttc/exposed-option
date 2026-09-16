@@ -36,6 +36,7 @@ object Options : IdTable<String>("options") {
         requiredOptions.add(option)
     }
 
+    // TODO Can I provide annotation that collect all envs?
     /**
      * Validates that all registered required options have values set in the database.
      *

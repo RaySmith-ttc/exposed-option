@@ -1,8 +1,5 @@
-import okhttp3.internal.platform.android.AndroidLogHandler.publish
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.nmcp)
     alias(libs.plugins.benManes.versions)
     `maven-publish`
     signing
@@ -38,12 +35,6 @@ dependencies {
 java {
     withSourcesJar()
     withJavadocJar()
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xcontext-receivers")
-    }
 }
 
 tasks {
@@ -99,14 +90,6 @@ publishing {
                 password = System.getenv("SONATYPE_PASS")
             }
         }
-    }
-}
-
-nmcp {
-    publish("release") {
-        username.set(System.getenv("CENTRAL_SONATYPE_USER"))
-        password.set(System.getenv("CENTRAL_SONATYPE_PASS"))
-        publicationType.set("AUTOMATIC")
     }
 }
 

@@ -1,10 +1,14 @@
-rootProject.name = "exposed-option"
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
 }
+
+plugins {
+    id("com.gradleup.nmcp.settings").version("1.6.2")
+}
+
+rootProject.name = "exposed-option"
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
@@ -16,3 +20,11 @@ dependencyResolutionManagement {
 
     }
 }
+
+nmcpSettings {
+    centralPortal {
+        username = System.getenv("CENTRAL_SONATYPE_USER")
+        password = System.getenv("CENTRAL_SONATYPE_PASS")
+        publishingType = "AUTOMATIC"
+    }
+}
