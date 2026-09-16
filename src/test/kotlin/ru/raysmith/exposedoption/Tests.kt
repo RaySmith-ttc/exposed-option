@@ -3,7 +3,14 @@ package ru.raysmith.exposedoption
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.jetbrains.exposed.v1.core.StdOutSqlLogger
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.vendors.ForUpdateOption
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -492,6 +499,47 @@ class Tests : FreeSpec({
         delegate.set(2)
         property shouldBe 2
         delegate.getOrThrow() shouldBe 2
+    }
+
+    "record() should support ForUpdateOption" {
+        val delegate = option<Int?>("foo") { getOrNull() }
+
+        transaction {
+            delegate.record(ForUpdateOption.MySQL.ForUpdate()) shouldBe null
+        }
+
+        delegate.set(42)
+
+        transaction {
+            val record = delegate.record(ForUpdateOption.MySQL.ForUpdate())
+            record shouldNotBe null
+            record?.get(Options.id)?.value shouldBe "foo"
+            record?.get(Options.value) shouldBe "42"
+        }
+    }
+
+    "record(ForUpdateOption) should lock row and correctly increment in concurrent coroutines" {
+        val count = 10
+        val opt = option<Int>("concurrent_counter") { getOrSet(0) }
+        opt.value // init in database
+
+        coroutineScope {
+            List(count) {
+                async(Dispatchers.IO) {
+                    transaction(connection1) {
+                        opt.record(ForUpdateOption.MySQL.ForUpdate())
+                        opt.inc()
+                        Thread.sleep(10)
+                    }
+                }
+            }.awaitAll()
+        }
+
+        transaction(connection1) {
+            val record = opt.record()
+            record shouldNotBe null
+            record?.get(Options.value)?.toInt() shouldBe count
+        }
     }
 })
 

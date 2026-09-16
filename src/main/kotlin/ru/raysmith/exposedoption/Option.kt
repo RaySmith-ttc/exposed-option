@@ -2,6 +2,7 @@ package ru.raysmith.exposedoption
 
 import org.jetbrains.exposed.v1.core.Transaction
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.vendors.ForUpdateOption
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
@@ -9,6 +10,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.jdbc.transactions.transactionManager
 import org.jetbrains.exposed.v1.jdbc.update
 import ru.raysmith.utils.Cacheable
+import ru.raysmith.utils.letIf
 import java.math.BigDecimal
 import kotlin.reflect.KProperty
 import kotlin.reflect.typeOf
@@ -197,8 +199,10 @@ abstract class Option<T> {
     }
 
     /** Returns the database record for this option, or null if it doesn't exist */
-    context(Transaction)
-    fun record() = Options.selectAll().where { Options.id eq key }.firstOrNull()
+    context(_: Transaction)
+    fun record(forUpdate: ForUpdateOption? = null) = Options.selectAll().where { Options.id eq key }
+        .letIf(forUpdate != null) { it.forUpdate(forUpdate) }
+        .firstOrNull()
 
     /**
      * Sets a new value for this option in the database.
