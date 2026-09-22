@@ -44,6 +44,8 @@ abstract class Option<T> {
     /** Cache for storing the option value */
     open val cache: Cacheable<T>? get() = null
 
+    open val withLogs: Boolean = false
+
     /**
      * Property delegation getter implementation. Returns the option value,
      * using cache if available.
@@ -194,7 +196,17 @@ abstract class Option<T> {
             transactionIsolation = isolationLevel ?: database?.transactionManager?.defaultIsolationLevel,
             readOnly = false,
             db = database,
-            statement = statement
+            statement = {
+                var isLoggerUnregistered = false
+                if (!withLogs) {
+                    isLoggerUnregistered = unregisterInterceptor(defaultLogger)
+                }
+                statement().also {
+                    if (isLoggerUnregistered) {
+                        registerInterceptor(defaultLogger)
+                    }
+                }
+            }
         )
     }
 
@@ -261,6 +273,7 @@ inline fun <reified T> option(
     transformer: Transformer<String, T> = getDefaultTransformerOrCreate(typeOf<T>()) as Transformer<String, T>,
     database: Database? = null,
     isolationLevel: Int? = null,
+    withLogs: Boolean = false,
     crossinline getter: Option<T>.() -> T = { getOrThrow() }
 ) = object : Option<T>() {
     override val key: String = key
@@ -268,6 +281,7 @@ inline fun <reified T> option(
     override val database: Database? = database
     override val isolationLevel: Int? = isolationLevel
     override val cache: Cacheable<T>? = if (cacheTime != null) Cacheable(cacheTime) { getter() } else null
+    override val withLogs: Boolean = withLogs
     override val transformer: Transformer<String, T> = transformer
 }.also {
     if (null !is T) {
